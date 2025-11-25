@@ -30,6 +30,7 @@ class ApiService {
   static const int _forbiddenCode = 403;
   static const int _maxLogLength = 1000;
   static const int _previewLength = 500;
+  static const Duration _requestTimeout = Duration(seconds: 30);
 
   /// SharedPreferences에서 사용자 ID 가져오기
   static Future<String?> getUserId() async {
@@ -124,7 +125,7 @@ class ApiService {
 
   /// GET 요청 처리
   static Future<http.Response> _sendGetRequest(Uri url, Map<String, String> headers) {
-    return http.get(url, headers: headers);
+    return http.get(url, headers: headers).timeout(_requestTimeout);
   }
 
   /// POST 요청 처리
@@ -133,7 +134,7 @@ class ApiService {
       url,
       headers: headers,
       body: jsonEncode(body),
-    );
+    ).timeout(_requestTimeout);
   }
 
   /// DELETE 요청 처리
@@ -142,7 +143,7 @@ class ApiService {
       url,
       headers: headers,
       body: body != null ? jsonEncode(body) : null,
-    );
+    ).timeout(_requestTimeout);
   }
 
   /// PATCH 요청 처리
@@ -176,7 +177,7 @@ class ApiService {
       );
     }
 
-    final streamedResponse = await request.send();
+    final streamedResponse = await request.send().timeout(_requestTimeout);
     return await http.Response.fromStream(streamedResponse);
   }
 
@@ -269,7 +270,7 @@ class ApiService {
       await _addFilesToRequest(request, files);
 
       // 요청 전송 및 응답 처리
-      final streamedResponse = await request.send();
+      final streamedResponse = await request.send().timeout(_requestTimeout);
       final response = await http.Response.fromStream(streamedResponse);
 
       return _processResponse(response);
