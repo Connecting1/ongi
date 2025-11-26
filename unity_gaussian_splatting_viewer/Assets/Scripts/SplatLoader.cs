@@ -125,7 +125,7 @@ public class SplatLoader : MonoBehaviour
         }
 
         // 렌더러에 에셋 할당
-        splatRenderer.asset = currentAsset;
+        splatRenderer.m_Asset = currentAsset;
 
         // 카메라 위치 조정
         AdjustCameraPosition();
@@ -187,7 +187,7 @@ public class SplatLoader : MonoBehaviour
         {
             if (splatRenderer != null)
             {
-                splatRenderer.asset = null;
+                splatRenderer.m_Asset = null;
             }
 
             Destroy(currentAsset);
