@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import '../../providers/model3d_provider.dart';
 import '../../services/api/api_service.dart';
-import '../gaussian_splatting/gaussian_splatting_viewer_screen.dart';
+// import '../gaussian_splatting/gaussian_splatting_viewer_screen.dart';  // Unity 버전 (나중에 사용)
+import '../gaussian_splatting/gaussian_splatting_viewer_screen_mock.dart';  // 목업 버전 (현재 사용)
 
 class HomeScreenPage extends StatefulWidget {
   @override
@@ -213,11 +214,11 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
       return;
     }
 
-    // 뷰어 화면으로 이동
+    // 뷰어 화면으로 이동 (목업 버전)
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GaussianSplattingViewerScreen(
+        builder: (context) => GaussianSplattingViewerScreenMock(
           modelId: currentModel['id']?.toString() ?? 'unknown',
           modelUrl: gaussianModelUrl,
           modelName: currentModel['artifact_name'] ?? '3D 유물',
