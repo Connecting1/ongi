@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
-using GaussianSplatting;
+using GaussianSplatting.Runtime;
 
 /// <summary>
 /// 가우시안 스플래팅 .ply 파일을 동적으로 로드하는 스크립트
@@ -111,7 +111,7 @@ public class SplatLoader : MonoBehaviour
             }
 
             // 렌더러에 에셋 할당
-            splatRenderer.m_Asset = currentAsset;
+            splatRenderer.asset = currentAsset;
 
             // 카메라 위치 조정
             AdjustCameraPosition();
@@ -181,7 +181,7 @@ public class SplatLoader : MonoBehaviour
         {
             if (splatRenderer != null)
             {
-                splatRenderer.m_Asset = null;
+                splatRenderer.asset = null;
             }
 
             Destroy(currentAsset);
