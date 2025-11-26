@@ -15,7 +15,6 @@ public class SplatLoader : MonoBehaviour
 
     [Header("Loading Settings")]
     [SerializeField] private GameObject loadingIndicator;
-    [SerializeField] private float loadingTimeout = 30f;
 
     private GaussianSplatAsset currentAsset;
     private Coroutine loadingCoroutine;
@@ -87,50 +86,57 @@ public class SplatLoader : MonoBehaviour
         // 이전 모델 언로드
         UnloadCurrentModel();
 
-        // 타임아웃 카운터
-        float elapsedTime = 0f;
-
+        // .ply 파일을 바이트 배열로 읽기
+        byte[] fileData = null;
         try
         {
-            // .ply 파일을 바이트 배열로 읽기
-            byte[] fileData = File.ReadAllBytes(filePath);
+            fileData = File.ReadAllBytes(filePath);
             Debug.Log($"File loaded: {fileData.Length} bytes");
-
-            // GaussianSplatAsset 생성
-            currentAsset = ScriptableObject.CreateInstance<GaussianSplatAsset>();
-
-            // 데이터 파싱 및 로드 (비동기)
-            bool loadSuccess = false;
-            yield return StartCoroutine(LoadPlyData(fileData, (success) => {
-                loadSuccess = success;
-            }));
-
-            if (!loadSuccess)
-            {
-                throw new Exception("Failed to parse PLY file");
-            }
-
-            // 렌더러에 에셋 할당
-            splatRenderer.asset = currentAsset;
-
-            // 카메라 위치 조정
-            AdjustCameraPosition();
-
-            Debug.Log("Model loaded successfully");
-            SendMessageToFlutter("loading_completed", filePath);
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to load model: {e.Message}");
-            SendMessageToFlutter("error", $"Load failed: {e.Message}");
-        }
-        finally
-        {
-            // 로딩 인디케이터 숨김
+            Debug.LogError($"Failed to read file: {e.Message}");
+            SendMessageToFlutter("error", $"File read failed: {e.Message}");
             if (loadingIndicator != null)
             {
                 loadingIndicator.SetActive(false);
             }
+            yield break;
+        }
+
+        // GaussianSplatAsset 생성
+        currentAsset = ScriptableObject.CreateInstance<GaussianSplatAsset>();
+
+        // 데이터 파싱 및 로드 (비동기)
+        bool loadSuccess = false;
+        yield return StartCoroutine(LoadPlyData(fileData, (success) => {
+            loadSuccess = success;
+        }));
+
+        if (!loadSuccess)
+        {
+            Debug.LogError("Failed to parse PLY file");
+            SendMessageToFlutter("error", "PLY parsing failed");
+            if (loadingIndicator != null)
+            {
+                loadingIndicator.SetActive(false);
+            }
+            yield break;
+        }
+
+        // 렌더러에 에셋 할당
+        splatRenderer.asset = currentAsset;
+
+        // 카메라 위치 조정
+        AdjustCameraPosition();
+
+        Debug.Log("Model loaded successfully");
+        SendMessageToFlutter("loading_completed", filePath);
+
+        // 로딩 인디케이터 숨김
+        if (loadingIndicator != null)
+        {
+            loadingIndicator.SetActive(false);
         }
     }
 
