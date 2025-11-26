@@ -89,13 +89,22 @@
 1. Unity Editor에서 **Window** → **Package Manager** 열기
 2. 좌측 상단 **+** 버튼 클릭
 3. **Add package from git URL** 선택
-4. 입력: `https://github.com/aras-p/UnityGaussianSplatting.git`
+4. 입력: `https://github.com/aras-p/UnityGaussianSplatting.git?path=/package`
 5. **Add** 클릭
 
-#### 방법 2: Manual 설치
+**중요**: URL 끝에 `?path=/package`를 반드시 포함하세요!
 
-1. GitHub에서 저장소 다운로드
-2. `Assets/Plugins/UnityGaussianSplatting` 폴더에 복사
+#### 방법 2: Manual 설치 (Packages 폴더에 설치)
+
+**주의**: Assets/Plugins가 아닌 **Packages/** 폴더에 설치해야 합니다!
+
+```bash
+# Unity 프로젝트의 Packages 폴더로 이동
+cd <Unity-Project-Path>/Packages
+git clone https://github.com/aras-p/UnityGaussianSplatting.git
+```
+
+Unity Editor를 재시작하세요.
 
 ### 3단계: 스크립트 추가
 
@@ -290,6 +299,31 @@ flutter build ios --release
 ---
 
 ## 트러블슈팅
+
+### 문제 0: GaussianSplatRenderer / GaussianSplatAsset 타입을 찾을 수 없음
+
+**원인**: UnityGaussianSplatting이 잘못된 위치(Assets/Plugins)에 설치됨
+
+**증상**:
+```
+error CS0246: The type or namespace name 'GaussianSplatRenderer' could not be found
+error CS0246: The type or namespace name 'GaussianSplatAsset' could not be found
+```
+
+**해결**:
+
+1. Unity Editor에서 잘못 설치된 `Assets/Plugins/UnityGaussianSplatting` 폴더 삭제
+2. Package Manager로 재설치:
+   ```
+   Window → Package Manager
+   "+" → Add package from git URL
+   입력: https://github.com/aras-p/UnityGaussianSplatting.git?path=/package
+   ```
+   **중요**: `?path=/package` 반드시 포함!
+3. Unity Editor 재시작
+4. `Window → Package Manager`에서 "Gaussian Splatting" 패키지 확인
+
+**이유**: UPM 패키지는 Packages/ 폴더에 있어야 Assembly Definition이 작동합니다.
 
 ### 문제 1: "UnityPlayer not found" 에러
 

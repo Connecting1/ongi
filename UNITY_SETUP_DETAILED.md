@@ -46,24 +46,46 @@ Unity Editor 열린 후:
 
 ## 🔌 2단계: UnityGaussianSplatting 플러그인 설치
 
-### 방법 1: Package Manager (권장)
+### 방법 1: Package Manager - Git URL (권장)
 
 ```
 1. Window → Package Manager
 2. 좌측 상단 "+" 버튼
 3. "Add package from git URL" 선택
-4. 입력: https://github.com/aras-p/UnityGaussianSplatting.git
+4. 입력: https://github.com/aras-p/UnityGaussianSplatting.git?path=/package
 5. Add 클릭
 ```
 
-### 방법 2: Manual (git URL 안되는 경우)
+**주의**: URL 끝에 `?path=/package`를 반드시 포함해야 합니다!
+
+### 방법 2: Manual - Packages 폴더에 설치 (권장)
+
+**중요**: Assets/Plugins가 아닌 **Packages/** 폴더에 설치해야 합니다!
 
 ```bash
+# Windows의 경우 (Git Bash 또는 PowerShell)
+cd "C:/sanhak/unity_gaussian_splatting_viewer/Packages"
+git clone https://github.com/aras-p/UnityGaussianSplatting.git
+
+# Linux/Mac의 경우
 cd /home/user/ongi/unity_gaussian_splatting_viewer/Packages
 git clone https://github.com/aras-p/UnityGaussianSplatting.git
 ```
 
 그 후 Unity Editor 재시작
+
+### 방법 3: Manual - Package Manifest 수정 (고급)
+
+`Packages/manifest.json` 파일을 열어 다음 라인 추가:
+
+```json
+{
+  "dependencies": {
+    "com.aras-p.gaussian-splatting": "https://github.com/aras-p/UnityGaussianSplatting.git?path=/package",
+    ...
+  }
+}
+```
 
 ### 설치 확인
 
@@ -317,6 +339,50 @@ flutter run
 ---
 
 ## 🐛 문제 해결
+
+### 문제 0: GaussianSplatRenderer와 GaussianSplatAsset을 찾을 수 없음 (컴파일 에러)
+
+**원인**: UnityGaussianSplatting이 잘못된 위치(Assets/Plugins)에 설치됨
+
+**증상**:
+```
+The type or namespace name 'GaussianSplatRenderer' could not be found
+The type or namespace name 'GaussianSplatAsset' could not be found
+```
+
+**해결 방법**:
+
+1. **잘못 설치된 플러그인 삭제**:
+   - Unity Editor에서 `Assets/Plugins/UnityGaussianSplatting` 폴더를 완전히 삭제
+   - 또는 파일 탐색기에서 직접 삭제
+
+2. **올바른 위치에 재설치 - 방법 A (Git Bash 사용)**:
+   ```bash
+   # Windows에서 Git Bash 열기
+   cd "C:/sanhak/unity_gaussian_splatting_viewer/Packages"
+   git clone https://github.com/aras-p/UnityGaussianSplatting.git
+   ```
+
+3. **올바른 위치에 재설치 - 방법 B (Package Manager 사용)**:
+   ```
+   Window → Package Manager
+   좌측 상단 "+" → Add package from git URL
+   입력: https://github.com/aras-p/UnityGaussianSplatting.git?path=/package
+   ```
+   **중요**: `?path=/package` 반드시 포함!
+
+4. **Unity Editor 재시작**
+
+5. **설치 확인**:
+   - `Window → Package Manager` 열기
+   - 좌측 드롭다운에서 "In Project" 선택
+   - "Gaussian Splatting" 패키지가 보이면 성공
+   - Console 창에서 컴파일 에러가 사라졌는지 확인
+
+**왜 Packages 폴더여야 하나요?**
+- UnityGaussianSplatting은 UPM(Unity Package Manager) 패키지입니다
+- UPM 패키지는 Packages/ 폴더에 있어야 Assembly Definition이 제대로 작동합니다
+- Assets/Plugins는 일반 Unity Assets용이며, 패키지 시스템과 호환되지 않습니다
 
 ### 문제 1: "UnityPlayer not found" 에러
 
