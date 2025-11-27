@@ -45,5 +45,7 @@ flutter {
 }
 
 dependencies {
-    implementation project(':unityLibrary')
+    implementation(project(':unityLibrary')) {
+        exclude group: '', module: 'unity-classes'
+    }
 }
